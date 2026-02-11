@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sinh Viên ToolKit - All in One</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* --- CSS SYSTEM --- */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --primary: #0066ff; --primary-dark: #0052cc; --secondary: #ff3366; --accent: #00d4ff;
+      --success: #00c851; --warning: #ff9800; --danger: #ff4444;
+      --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --bg-light: #f8f9fe; --card-bg: #ffffff;
+      --text-primary: #1a1a2e; --text-secondary: #6b7280;
+      --border: #e5e7eb; --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg-light); color: var(--text-primary); line-height: 1.6; overflow-x: hidden; }
+    
+    /* FIX: ẨN MŨI TÊN TRONG INPUT NUMBER */
+    input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    input[type=number] { -moz-appearance: textfield; }
+
+    /* Layout */
+    .header-hero { background: var(--bg-gradient); padding: 3rem 2rem 8rem; position: relative; overflow: hidden; }
+    .header-content { max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
+    h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 900; color: white; margin-bottom: 0.5rem; }
+    .subtitle { font-size: 1.125rem; color: rgba(255,255,255,0.9); margin-bottom: 2rem; }
+    
+    .stats-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+    .stat-item { background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); padding: 1.25rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); color: white; }
+    .stat-value { font-size: 2rem; font-weight: 700; display: block; }
+    .stat-label { font-size: 0.875rem; opacity: 0.9; }
+
+    .container { max-width: 1400px; margin: -6rem auto 3rem; padding: 0 2rem; position: relative; z-index: 2; }
+    .layout { display: grid; grid-template-columns: 280px 1fr; gap: 2rem; }
+    
+    /* Sidebar */
+    .sidebar { background: var(--card-bg); padding: 2rem; border-radius: 24px; box-shadow: var(--shadow-sm); height: fit-content; position: sticky; top: 2rem; }
+    .sidebar h3 { font-family: 'Playfair Display', serif; font-size: 1.25rem; margin-bottom: 1.5rem; color: var(--primary); }
+    .nav-section h4 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); margin-bottom: 1rem; font-weight: 600; }
+    .nav-item { padding: 0.875rem 1rem; margin-bottom: 0.5rem; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.75rem; font-weight: 500; color: var(--text-primary); border: 2px solid transparent; }
+    .nav-item:hover { background: linear-gradient(135deg, rgba(102,126,234,0.08) 0%, rgba(118,75,162,0.08) 100%); transform: translateX(4px); border-color: var(--primary); }
+    .nav-item.active { background: var(--bg-gradient); color: white; box-shadow: var(--shadow-md); }
+    
+    /* Content */
+    .section { display: none; animation: fadeIn 0.5s ease-out; }
+    .section.active { display: block; }
+    .card { background: var(--card-bg); border-radius: 24px; padding: 2.5rem; box-shadow: var(--shadow-md); margin-bottom: 2rem; }
+    .card-header { border-bottom: 2px solid var(--border); padding-bottom: 1.5rem; margin-bottom: 2rem; }
+    .card-title { font-family: 'Playfair Display', serif; font-size: 1.75rem; font-weight: 700; }
+
+    /* Tables & Inputs */
+    .table-wrapper { overflow-x: auto; border-radius: 16px; box-shadow: var(--shadow-sm); }
+    table { width: 100%; border-collapse: separate; border-spacing: 0; background: white; font-size: 0.875rem; }
+    th { background: var(--bg-gradient); color: white; padding: 1rem; text-align: center; white-space: nowrap; }
+    th:first-child { border-top-left-radius: 16px; } th:last-child { border-top-right-radius: 16px; }
+    td { padding: 0.875rem; text-align: center; border-bottom: 1px solid var(--border); }
+    
+    input, select { width: 100%; padding: 0.75rem 1rem; border: 2px solid var(--border); border-radius: 12px; font-size: 0.9375rem; transition: all 0.3s ease; background: white; margin-bottom: 0.5rem; }
+    input:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(102,126,234,0.1); }
+    
+    /* Custom Input Grid for Pass Calc */
+    .calc-row { display: grid; grid-template-columns: 2fr 1fr; gap: 10px; align-items: center; margin-bottom: 10px; }
+    .calc-row label { grid-column: 1 / -1; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: -5px; }
+
+    /* Buttons */
+    .btn-group { display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap; }
+    .btn { padding: 1rem 2rem; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; }
+    .btn-primary { background: var(--bg-gradient); color: white; width: 100%; }
+    .btn-secondary { background: white; color: var(--primary); border: 2px solid var(--primary); }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .delete-btn { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 1.2rem; }
+
+    /* Results */
+    .alert { padding: 1.25rem; border-radius: 12px; margin-bottom: 1.5rem; display: flex; gap: 1rem; align-items: flex-start; }
+    .alert-info { background: rgba(0,102,255,0.1); border-left: 4px solid var(--primary); color: var(--primary-dark); }
+    .alert-success { background: rgba(0,200,81,0.1); border-left: 4px solid var(--success); color: #007E33; }
+    .alert-warning { background: rgba(255,152,0,0.1); border-left: 4px solid var(--warning); color: #cc7700; }
+    
+    .result-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 1.5rem; }
+    .result-item { background: white; padding: 1rem; border-radius: 12px; text-align: center; box-shadow: var(--shadow-sm); border: 1px solid var(--border); }
+    .result-label { font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.5rem; font-weight: 600; }
+    .result-score { font-size: 1.8rem; font-weight: 800; }
+    .score-10 { color: var(--success); }
+    .score-9 { color: var(--primary); }
+    .score-8 { color: var(--warning); }
+    .score-x { color: var(--text-secondary); text-decoration: line-through; opacity: 0.5; }
+    .score-detail { font-size: 0.75rem; color: #666; margin-top: 5px; }
+
+    .summary-card { background: linear-gradient(135deg, rgba(102,126,234,0.05) 0%, rgba(118,75,162,0.05) 100%); padding: 1.5rem; border-radius: 20px; margin-top: 1rem; }
+    .metric { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
+    .metric-value { font-weight: 700; color: var(--primary-dark); }
+    .progress-bar { height: 8px; background: #ddd; border-radius: 4px; margin-top: 10px; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--bg-gradient); }
+    
+    .toast { position: fixed; bottom: 20px; right: 20px; background: #333; color: white; padding: 10px 20px; border-radius: 8px; opacity: 0; transition: opacity 0.3s; z-index: 1000; font-size: 0.9rem; pointer-events: none; }
+    .toast.show { opacity: 1; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 968px) { .layout { grid-template-columns: 1fr; } .result-grid { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</head>
+<body>
+
+  <div id="toast" class="toast">💾 Đã tự động lưu dữ liệu</div>
+
+  <div class="header-hero">
+    <div class="header-content">
+      <h1>📚 Sinh Viên ToolKit</h1>
+      <p class="subtitle">Tính điểm GPA & Quy đổi chứng chỉ (Auto-Save)</p>
+      
+      <div class="stats-bar">
+        <div class="stat-item"><span class="stat-value" id="totalSubjects">0</span><span class="stat-label">Môn học</span></div>
+        <div class="stat-item"><span class="stat-value" id="totalCredits">0</span><span class="stat-label">Tín chỉ</span></div>
+        <div class="stat-item"><span class="stat-value" id="currentGPA">0.00</span><span class="stat-label">GPA hiện tại</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="layout">
+      
+      <aside class="sidebar">
+        <h3>🎯 Menu</h3>
+        <div class="nav-section">
+          <h4>Học tập</h4>
+          <div class="nav-item active" onclick="showSection('hocphan')"><span>📐 Tính GPA</span></div>
+          <div class="nav-item" onclick="showSection('quamon')"><span>🎯 Tính điểm qua môn</span></div>
+          <div class="nav-item" onclick="showSection('totnghiep')"><span>🎓 Dự đoán tốt nghiệp</span></div>
+        </div>
+        <div class="nav-section">
+          <h4>Tiếng Anh</h4>
+          <div class="nav-item" onclick="showSection('quydoi')"><span>🔄 Quy đổi điểm</span></div>
+        </div>
+        <div style="margin-top: 2rem; border-top: 1px solid #eee; padding-top: 1rem;">
+            <button onclick="hardReset()" style="background: transparent; border: 1px dashed var(--danger); color: var(--danger); padding: 0.5rem 1rem; width: 100%; border-radius: 8px; cursor: pointer; font-size: 0.8rem;">
+                ⚠️ Xóa dữ liệu lưu
+            </button>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        
+        <div id="hocphan" class="section active">
+          <div class="card">
+            <div class="card-header"><h2 class="card-title">Tính GPA theo kỳ</h2></div>
+            <div class="alert alert-info">💡 Nhập điểm các môn học. Hệ thống sẽ <strong>tự động lưu</strong> lại.</div>
+            
+            <div class="table-wrapper">
+              <table id="gpaTable">
+                <thead>
+                  <tr>
+                    <th>Kỳ</th><th>Môn học</th><th style="width:85px">TC</th><th style="width:96px">Điểm</th><th>Chữ</th><th>Hệ 4</th><th style="width:50px"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  </tbody>
+              </table>
+            </div>
+            
+            <div class="btn-group">
+              <button class="btn btn-secondary" onclick="addRow()" style="width:auto">➕ Thêm môn</button>
+              <button class="btn btn-primary" onclick="calcGPA()" style="width:auto">🧮 Tính ngay</button>
+              <button class="btn btn-danger" onclick="clearGPATable()" style="width:auto">🗑️ Xóa hết</button>
+            </div>
+          </div>
+          <div id="summaryContainer"></div>
+        </div>
+
+        <div id="quydoi" class="section">
+          <div class="card">
+            <div class="card-header"><h2 class="card-title">Quy đổi điểm Tiếng Anh</h2></div>
+            <div class="alert alert-info">💡 Dữ liệu chứng chỉ bạn chọn sẽ được lưu lại.</div>
+
+            <div style="max-width: 800px; margin: 0 auto;">
+              <div style="margin-bottom: 1.5rem;">
+                <label style="font-weight: 600;">Chọn loại chứng chỉ:</label>
+                <select id="courseCertType" onchange="updateInputType()">
+                  <option value="">-- Chọn bài thi --</option>
+                  <option value="ielts">IELTS</option>
+                  <option value="toeic">TOEIC (Nghe & Đọc)</option>
+                  <option value="toefl_ibt">TOEFL iBT</option>
+                  <option value="toefl_itp">TOEFL ITP</option>
+                  <option value="cambridge">Cambridge (Scale Score)</option>
+                  <option value="bec">BEC (Business English)</option>
+                  <option value="bulats">BULATS</option>
+                  <option value="aptis">Aptis (General/British Council)</option>
+                  <option value="jetset">Jetset (Pearson)</option>
+                </select>
+              </div>
+
+              <div id="scoreInputGroup" style="display: none; margin-bottom: 1.5rem;">
+                <label style="font-weight: 600;">Nhập điểm số:</label>
+                <input type="number" id="courseScore" step="0.5" placeholder="VD: 6.0" />
+              </div>
+
+              <div id="levelInputGroup" style="display: none; margin-bottom: 1.5rem;">
+                <label style="font-weight: 600;">Chọn cấp độ đạt được:</label>
+                <select id="courseLevel"></select>
+              </div>
+
+              <button class="btn btn-primary" onclick="convertFullCertificate()">🔄 Quy đổi điểm học phần</button>
+              <div id="courseConversionResult" style="margin-top: 2rem;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="quamon" class="section">
+          <div class="card">
+            <div class="card-header"><h2 class="card-title">Tính điểm thi cần thiết</h2></div>
+            <div class="alert alert-info">
+              💡 Nhập điểm thành phần và <strong>hệ số %</strong> tương ứng. Để trống hệ số nếu không có cột điểm đó.
+            </div>
+            
+            <div style="max-width: 500px;">
+                <div class="calc-row">
+                    <label>Điểm thành phần 1 (VD: Chuyên cần)</label>
+                    <input type="number" id="sc1" placeholder="Điểm (VD: 10)">
+                    <input type="number" id="wt1" placeholder="% (VD: 10)">
+                </div>
+
+                <div class="calc-row">
+                    <label>Điểm thành phần 2 (VD: Bài tập)</label>
+                    <input type="number" id="sc2" placeholder="Điểm (VD: 8)">
+                    <input type="number" id="wt2" placeholder="% (VD: 20)">
+                </div>
+
+                <div class="calc-row">
+                    <label>Điểm thành phần 3 (VD: Giữa kỳ)</label>
+                    <input type="number" id="sc3" placeholder="Điểm (VD: 7)">
+                    <input type="number" id="wt3" placeholder="% (VD: 20)">
+                </div>
+                
+                <hr style="border: 0; border-top: 1px dashed var(--border); margin: 1rem 0;">
+
+                <label style="font-weight: 700;">Mục tiêu qua môn:</label>
+                <input type="number" id="targetScore" placeholder="VD: 4.0 để qua môn, 8.5 để được A">
+                
+                <div style="margin-top:1rem; font-size:0.9rem; color:var(--text-secondary); text-align:right;">
+                    Trọng số thi cuối kỳ: <strong id="finalWeightDisplay" style="color:var(--primary)">50%</strong>
+                </div>
+
+                <button class="btn btn-primary" onclick="calcPassScore()" style="margin-top: 1rem;">🧮 Tính điểm thi cuối kỳ</button>
+            </div>
+            
+            <div id="passResult" style="margin-top: 1.5rem;"></div>
+          </div>
+        </div>
+
+        <div id="totnghiep" class="section">
+          <div class="card">
+            <div class="card-header"><h2 class="card-title">Dự đoán GPA tốt nghiệp</h2></div>
+            <div style="display: grid; gap: 1rem; max-width: 500px;">
+              <input type="number" id="currentGPAInput" placeholder="GPA hiện tại (hệ 4)">
+              <input type="number" id="earnedCredits" placeholder="Số tín chỉ đã tích lũy">
+              <input type="number" id="remainingCredits" placeholder="Số tín chỉ còn lại">
+              <input type="number" id="targetGradGPA" placeholder="GPA mong muốn khi ra trường">
+              <button class="btn btn-primary" onclick="calcGraduation()">Tính GPA các môn còn lại</button>
+            </div>
+            <div id="gradResult" style="margin-top: 1.5rem;"></div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // --- 0. DATA PERSISTENCE ---
+    const STORAGE_KEY_GPA = 'svtoolkit_gpa_data_v2';
+    const STORAGE_KEY_ENG = 'svtoolkit_english_data_v2';
+    const STORAGE_KEY_MISC = 'svtoolkit_misc_data_v2';
+
+    function showToast() {
+        const toast = document.getElementById('toast');
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    function autoSave() {
+        // Save GPA Table
+        const rows = Array.from(document.querySelectorAll('#gpaTable tbody tr')).map(row => ({
+            sem: row.querySelector('.semester').value,
+            name: row.querySelector('.subject-name').value,
+            credit: row.querySelector('.credit').value,
+            score: row.querySelector('.score').value
+        }));
+        localStorage.setItem(STORAGE_KEY_GPA, JSON.stringify(rows));
+
+        // Save English Data
+        const engData = {
+            type: document.getElementById('courseCertType').value,
+            score: document.getElementById('courseScore').value,
+            level: document.getElementById('courseLevel').value
+        };
+        localStorage.setItem(STORAGE_KEY_ENG, JSON.stringify(engData));
+
+        // Save Misc Data (updated with new pass calc fields)
+        const miscData = {
+            // Pass Calc Fields
+            sc1: document.getElementById('sc1').value, wt1: document.getElementById('wt1').value,
+            sc2: document.getElementById('sc2').value, wt2: document.getElementById('wt2').value,
+            sc3: document.getElementById('sc3').value, wt3: document.getElementById('wt3').value,
+            targetScore: document.getElementById('targetScore').value,
+            
+            // Grad Calc Fields
+            currentGPA: document.getElementById('currentGPAInput').value,
+            earned: document.getElementById('earnedCredits').value,
+            rem: document.getElementById('remainingCredits').value,
+            targetGrad: document.getElementById('targetGradGPA').value
+        };
+        localStorage.setItem(STORAGE_KEY_MISC, JSON.stringify(miscData));
+        
+        updateFinalWeightDisplay(); // Update UI whenever inputs change
+    }
+
+    function loadData() {
+        // Load GPA
+        const gpaData = JSON.parse(localStorage.getItem(STORAGE_KEY_GPA));
+        const tbody = document.querySelector('#gpaTable tbody');
+        tbody.innerHTML = '';
+        if (gpaData && gpaData.length > 0) {
+            gpaData.forEach(item => addRow(item.sem, item.name, item.credit, item.score));
+            calcGPA(); 
+        } else {
+            addRow(); 
+        }
+
+        // Load English
+        const engData = JSON.parse(localStorage.getItem(STORAGE_KEY_ENG));
+        if (engData) {
+            document.getElementById('courseCertType').value = engData.type || '';
+            updateInputType();
+            document.getElementById('courseScore').value = engData.score || '';
+            setTimeout(() => {
+                if(engData.level) document.getElementById('courseLevel').value = engData.level;
+                if(engData.type) convertFullCertificate();
+            }, 100);
+        }
+
+        // Load Misc
+        const miscData = JSON.parse(localStorage.getItem(STORAGE_KEY_MISC));
+        if (miscData) {
+            document.getElementById('sc1').value = miscData.sc1 || ''; document.getElementById('wt1').value = miscData.wt1 || '';
+            document.getElementById('sc2').value = miscData.sc2 || ''; document.getElementById('wt2').value = miscData.wt2 || '';
+            document.getElementById('sc3').value = miscData.sc3 || ''; document.getElementById('wt3').value = miscData.wt3 || '';
+            document.getElementById('targetScore').value = miscData.targetScore || '';
+
+            document.getElementById('currentGPAInput').value = miscData.currentGPA || '';
+            document.getElementById('earnedCredits').value = miscData.earned || '';
+            document.getElementById('remainingCredits').value = miscData.rem || '';
+            document.getElementById('targetGradGPA').value = miscData.targetGrad || '';
+            
+            updateFinalWeightDisplay();
+            if(miscData.targetScore) calcPassScore();
+            if(miscData.currentGPA) calcGraduation();
+        }
+    }
+
+    function hardReset() {
+        if(confirm('Bạn có chắc muốn xóa toàn bộ dữ liệu đã lưu?')) {
+            localStorage.clear();
+            location.reload();
+        }
+    }
+
+    document.addEventListener('input', autoSave);
+    document.addEventListener('change', autoSave);
+    window.addEventListener('load', loadData);
+
+    // --- 1. GPA LOGIC ---
+    function convertGrade(score) {
+      if (score >= 9) return ['A+', 4.0];
+      if (score >= 8.5) return ['A', 3.7];
+      if (score >= 8) return ['B+', 3.5];
+      if (score >= 7) return ['B', 3.0];
+      if (score >= 6.5) return ['C+', 2.5];
+      if (score >= 5.5) return ['C', 2.0];
+      if (score >= 5) return ['D+', 1.5];
+      if (score >= 4) return ['D', 1.0];
+      return ['F', 0];
+    }
+
+    function addRow(sem = '1', name = '', credit = '', score = '') {
+      const tbody = document.querySelector('#gpaTable tbody');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><select class="semester"><option value="1" ${sem=='1'?'selected':''}>1</option><option value="2" ${sem=='2'?'selected':''}>2</option><option value="3" ${sem=='3'?'selected':''}>3</option><option value="4" ${sem=='4'?'selected':''}>4</option><option value="5" ${sem=='5'?'selected':''}>5</option><option value="6" ${sem=='6'?'selected':''}>6</option><option value="7" ${sem=='7'?'selected':''}>7</option><option value="8" ${sem=='8'?'selected':''}>8</option></select></td>
+        <td><input type="text" class="subject-name" placeholder="Tên môn" value="${name}"></td>
+        <td><input type="number" class="credit" placeholder="3" min="1" value="${credit}"></td>
+        <td><input type="number" class="score" placeholder="8.5" step="0.1" value="${score}"></td>
+        <td class="letter"></td><td class="scale4"></td>
+        <td><button class="delete-btn" onclick="deleteRow(this)">🗑️</button></td>
+      `;
+      tbody.appendChild(tr);
+    }
+
+    function deleteRow(btn) {
+      const tbody = document.querySelector('#gpaTable tbody');
+      if(tbody.rows.length > 1) { btn.closest('tr').remove(); calcGPA(); autoSave(); }
+    }
+
+    function clearGPATable() {
+      if(confirm('Xóa hết bảng điểm?')) {
+          document.querySelector('#gpaTable tbody').innerHTML = '';
+          addRow();
+          document.getElementById('summaryContainer').innerHTML = '';
+          updateHeaderStats(0,0,0);
+          autoSave();
+      }
+    }
+
+    function calcGPA() {
+      const rows = document.querySelectorAll('#gpaTable tbody tr');
+      let totalCredits = 0, totalPoints = 0, subjectCount = 0;
+      let semesterData = {};
+
+      rows.forEach(row => {
+        const sem = row.querySelector('.semester').value;
+        const cred = parseFloat(row.querySelector('.credit').value);
+        const score = parseFloat(row.querySelector('.score').value);
+
+        if(cred && !isNaN(score)) {
+          const [letGrade, scale4] = convertGrade(score);
+          row.querySelector('.letter').innerText = letGrade;
+          row.querySelector('.scale4').innerText = scale4;
+          totalCredits += cred;
+          totalPoints += (scale4 * cred);
+          subjectCount++;
+          if(!semesterData[sem]) semesterData[sem] = {c:0, p:0};
+          semesterData[sem].c += cred;
+          semesterData[sem].p += (scale4 * cred);
+        }
+      });
+      const globalGPA = totalCredits ? (totalPoints / totalCredits).toFixed(2) : '0.00';
+      updateHeaderStats(subjectCount, totalCredits, globalGPA);
+      renderSummary(semesterData, globalGPA);
+    }
+
+    function updateHeaderStats(sub, cred, gpa) {
+      document.getElementById('totalSubjects').innerText = sub;
+      document.getElementById('totalCredits').innerText = cred;
+      document.getElementById('currentGPA').innerText = gpa;
+    }
+
+    function renderSummary(semData, gpa) {
+      const container = document.getElementById('summaryContainer');
+      let html = '';
+      Object.keys(semData).sort().forEach(sem => {
+        const sGPA = (semData[sem].p / semData[sem].c).toFixed(2);
+        html += `<div class="summary-card"><div class="metric"><span class="metric-label">Kỳ ${sem}</span><span class="metric-value">GPA: ${sGPA}</span></div><div class="progress-bar"><div class="progress-fill" style="width: ${(sGPA/4)*100}%"></div></div></div>`;
+      });
+      container.innerHTML = html;
+    }
+
+    // --- 2. ENGLISH LOGIC ---
+    function updateInputType() {
+      const type = document.getElementById('courseCertType').value;
+      const scoreGroup = document.getElementById('scoreInputGroup');
+      const levelGroup = document.getElementById('levelInputGroup');
+      const levelSelect = document.getElementById('courseLevel');
+      
+      scoreGroup.style.display = 'none';
+      levelGroup.style.display = 'none';
+      levelSelect.innerHTML = '';
+      document.getElementById('courseConversionResult').innerHTML = '';
+
+      if (!type) return;
+
+      if (['aptis', 'jetset'].includes(type)) {
+        levelGroup.style.display = 'block';
+        if (type === 'aptis') {
+          [['C','Aptis C'], ['B2','Aptis B2'], ['B1','Aptis B1'], ['A2','Aptis A2']].forEach(opt => levelSelect.add(new Option(opt[1], opt[0])));
+        } else {
+          [['6','Level 6'], ['5','Level 5'], ['4','Level 4'], ['3','Level 3']].forEach(opt => levelSelect.add(new Option(opt[1], opt[0])));
+        }
+      } else {
+        scoreGroup.style.display = 'block';
+      }
+    }
+
+    function convertFullCertificate() {
+      const type = document.getElementById('courseCertType').value;
+      const score = parseFloat(document.getElementById('courseScore').value);
+      const level = document.getElementById('courseLevel').value;
+      if (!type) return;
+      
+      let res = null;
+      switch(type) {
+        case 'ielts':
+          if (score >= 6.0) res = {c1:10, c2:10, c3:10, c3plus:10, msg:"B2 trở lên (Xuất sắc)"};
+          else if (score >= 5.5) res = {c1:10, c2:9, c3:9, c3plus:null, msg:"IELTS 5.5"};
+          else if (score >= 5.0) res = {c1:9, c2:8, c3:8, c3plus:null, msg:"IELTS 5.0"};
+          else if (score >= 4.5) res = {c1:8, c2:7, c3:7, c3plus:null, msg:"IELTS 4.5"};
+          break;
+        case 'toeic':
+          if (score >= 730) res = {c1:10, c2:10, c3:10, c3plus:10, msg:"TOEIC ≥ 730"};
+          else if (score >= 600) res = {c1:10, c2:9, c3:9, c3plus:null, msg:"TOEIC 600-725"};
+          else if (score >= 525) res = {c1:9, c2:8, c3:8, c3plus:null, msg:"TOEIC 525-595"};
+          else if (score >= 450) res = {c1:8, c2:7, c3:7, c3plus:null, msg:"TOEIC 450-520"};
+          break;
+        case 'toefl_ibt':
+          if (score >= 72) res = {c1:10, c2:10, c3:10, c3plus:10, msg:"TOEFL iBT ≥ 72"};
+          else if (score >= 61) res = {c1:10, c2:9, c3:9, c3plus:null, msg:"TOEFL iBT 61-71"};
+          else if (score >= 45) res = {c1:9, c2:8, c3:8, c3plus:null, msg:"TOEFL iBT 45-60"};
+          else if (score >= 36) res = {c1:8, c2:7, c3:7, c3plus:null, msg:"TOEFL iBT 36-44"};
+          break;
+        case 'toefl_itp':
+          if (score >= 543) res = {c1:10, c2:10, c3:10, c3plus:10, msg:"TOEFL ITP ≥ 543"};
+          else if (score >= 500) res = {c1:10, c2:9, c3:9, c3plus:null, msg:"TOEFL ITP 500-542"};
+          else if (score >= 485) res = {c1:9, c2:8, c3:8, c3plus:null, msg:"TOEFL ITP 485-499"};
+          else if (score >= 450) res = {c1:8, c2:7, c3:7, c3plus:null, msg:"TOEFL ITP 450-484"};
+          break;
+        case 'cambridge':
+          if (score >= 160) res = {c1:10, c2:10, c3:10, c3plus:10, msg:"Scale ≥ 160"};
+          else if (score >= 153) res = {c1:9, c2:8, c3:8, c3plus:null, msg:"Scale 153-159"};
+          else if (score >= 140) res = {c1:8, c2:7, c3:7, c3plus:null, msg:"Scale 140-152"};
+          break;
+        case 'bec':
+          if (score >= 160) res = {c1:10, c2:10, c3:10, c3plus:10, msg:"BEC Vantage/Higher"};
+          else if (score >= 153) res = {c1:9, c2:8, c3:8, c3plus:null, msg:"BEC Preliminary (Khá)"};
+          else if (score >= 140) res = {c1:8, c2:7, c3:7, c3plus:null, msg:"BEC Preliminary (TB)"};
+          break;
+        case 'bulats':
+          if (score >= 60) res = {c1:10, c2:10, c3:10, c3plus:10, msg:"BULATS ≥ 60"};
+          else if (score >= 50) res = {c1:9, c2:8, c3:8, c3plus:null, msg:"BULATS 50-59"};
+          else if (score >= 40) res = {c1:8, c2:7, c3:7, c3plus:null, msg:"BULATS 40-49"};
+          break;
+        case 'aptis':
+          if (level === 'C' || level === 'B2') res = {c1:10, c2:10, c3:10, c3plus:10, msg:"Aptis B2/C"};
+          else if (level === 'B1') res = {c1:9, c2:8, c3:8, c3plus:null, msg:"Aptis B1"};
+          break;
+        case 'jetset':
+          if (level === '6' || level === '5') res = {c1:10, c2:10, c3:10, c3plus:10, msg:"Jetset Level 5/6"};
+          else if (level === '4') res = {c1:9, c2:8, c3:8, c3plus:null, msg:"Jetset Level 4"};
+          break;
+      }
+
+      const div = document.getElementById('courseConversionResult');
+      if(!res) {
+        div.innerHTML = `<div class="alert alert-warning">Điểm chưa đủ quy đổi/dữ liệu sai.</div>`;
+      } else {
+        const scoreUI = (val) => val ? `<span class="score-${val}">${val}</span>` : `<span class="score-x">X</span>`;
+        const noteUI = (val) => val ? 'Được miễn' : 'Phải học';
+        div.innerHTML = `
+          <div style="background:white; border:2px solid var(--success); border-radius:12px; padding:1.5rem; text-align:center;">
+            <h3 style="color:var(--success); margin-bottom:0.5rem">🎉 Kết quả</h3>
+            <p style="color:#666; margin-bottom:1.5rem;">${res.msg}</p>
+            <div class="result-grid">
+              <div class="result-item"><div class="result-label">Course 1</div><div class="result-score">${scoreUI(res.c1)}</div></div>
+              <div class="result-item"><div class="result-label">Course 2</div><div class="result-score">${scoreUI(res.c2)}</div></div>
+              <div class="result-item"><div class="result-label">Course 3</div><div class="result-score">${scoreUI(res.c3)}</div></div>
+              <div class="result-item"><div class="result-label">Course 3+</div><div class="result-score">${scoreUI(res.c3plus)}</div><div class="score-detail">${noteUI(res.c3plus)}</div></div>
+            </div>
+          </div>`;
+        showToast();
+      }
+    }
+
+    // --- 3. PASS SCORE LOGIC (UPDATED) ---
+    function updateFinalWeightDisplay() {
+        const w1 = parseFloat(document.getElementById('wt1').value) || 0;
+        const w2 = parseFloat(document.getElementById('wt2').value) || 0;
+        const w3 = parseFloat(document.getElementById('wt3').value) || 0;
+        const finalW = 100 - (w1 + w2 + w3);
+        const el = document.getElementById('finalWeightDisplay');
+        el.innerText = finalW + "%";
+        
+        if (finalW <= 0) el.style.color = 'var(--danger)';
+        else el.style.color = 'var(--primary)';
+    }
+
+    function calcPassScore() {
+      // Inputs
+      const s1 = parseFloat(document.getElementById('sc1').value) || 0;
+      const w1 = parseFloat(document.getElementById('wt1').value) || 0;
+      
+      const s2 = parseFloat(document.getElementById('sc2').value) || 0;
+      const w2 = parseFloat(document.getElementById('wt2').value) || 0;
+      
+      const s3 = parseFloat(document.getElementById('sc3').value) || 0;
+      const w3 = parseFloat(document.getElementById('wt3').value) || 0;
+
+      const target = parseFloat(document.getElementById('targetScore').value);
+
+      if(isNaN(target)) {
+          alert("Vui lòng nhập điểm mục tiêu!");
+          return;
+      }
+
+      // Weights Calculation
+      const currentScore = (s1 * w1/100) + (s2 * w2/100) + (s3 * w3/100);
+      const usedWeight = w1 + w2 + w3;
+      const finalWeight = 100 - usedWeight;
+
+      const resultDiv = document.getElementById('passResult');
+
+      if (finalWeight <= 0) {
+          resultDiv.innerHTML = `<div class="alert alert-warning">Tổng hệ số thành phần đã vượt quá hoặc bằng 100%. Vui lòng kiểm tra lại.</div>`;
+          return;
+      }
+
+      // Formula: (Target - CurrentAccumulated) / FinalWeight%
+      const needed = (target - currentScore) / (finalWeight / 100);
+      
+      let msg = '', cls = '';
+      if(needed > 10) { 
+          msg = `Bạn cần thi <strong>${needed.toFixed(2)}</strong> điểm.<br>Rất tiếc, mức điểm này vượt quá 10.`; 
+          cls = 'alert-warning'; 
+      }
+      else if(needed <= 0) { 
+          msg = `Bạn đã tích lũy đủ điểm. Chỉ cần đi thi (nếu bắt buộc) hoặc thi 0 điểm vẫn đạt mục tiêu!`; 
+          cls = 'alert-success'; 
+      }
+      else { 
+          msg = `Để đạt ${target}, bạn cần thi cuối kỳ ít nhất: <strong>${needed.toFixed(2)}</strong> điểm.`; 
+          cls = 'alert-info'; 
+      }
+      
+      resultDiv.innerHTML = `<div class="alert ${cls}">${msg}</div>`;
+      showToast();
+    }
+
+    // --- 4. GRADUATION LOGIC ---
+    function calcGraduation() {
+      const curGPA = parseFloat(document.getElementById('currentGPAInput').value);
+      const earned = parseFloat(document.getElementById('earnedCredits').value);
+      const rem = parseFloat(document.getElementById('remainingCredits').value);
+      const target = parseFloat(document.getElementById('targetGradGPA').value);
+      if(isNaN(curGPA) || isNaN(earned) || isNaN(rem) || isNaN(target)) return;
+      
+      const needed = ((target * (earned + rem)) - (curGPA * earned)) / rem;
+      
+      const resDiv = document.getElementById('gradResult');
+      let msg = '', cls = '';
+      if(needed > 4) { msg = `Cần GPA ${needed.toFixed(2)} cho các môn còn lại (Bất khả thi > 4.0).`; cls = 'alert-warning'; }
+      else if(needed <= 0) { msg = `Đã dư điểm để đạt mục tiêu!`; cls = 'alert-success'; }
+      else { msg = `Cần GPA trung bình <strong>${needed.toFixed(2)}</strong> cho ${rem} TC còn lại.`; cls = 'alert-info'; }
+      resDiv.innerHTML = `<div class="alert ${cls}">${msg}</div>`;
+      showToast();
+    }
+
+    // --- UTILS ---
+    function showSection(id) {
+      document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      
+      const menuMap = { 'hocphan':0, 'quamon':1, 'totnghiep':2, 'quydoi':0 }; 
+      if(id === 'quydoi') document.querySelectorAll('.nav-section')[1].children[1].classList.add('active');
+      else document.querySelectorAll('.nav-section')[0].children[menuMap[id]+1].classList.add('active');
+    }
+  </script>
+</body>
+</html>
